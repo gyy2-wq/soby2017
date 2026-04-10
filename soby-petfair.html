@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOBY 온라인 펫페어</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #E8607A;
+    --pink-light: #FCEEF1;
+    --pink-mid: #F2AABB;
+    --green: #2D6A4F;
+    --green-light: #E6F0EC;
+    --green-mid: #8BBDA8;
+    --text: #2D2D2D;
+    --text-sub: #7A7A7A;
+    --bg: #FFF9FA;
+    --white: #FFFFFF;
+    --card-shadow: 0 2px 12px rgba(255,107,138,0.10);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--white);
+    padding: 20px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 0 rgba(255,107,138,0.08);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .logo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: var(--pink);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .logo-paw {
+    font-size: 22px;
+  }
+
+  .header-badge {
+    background: var(--green-light);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  .header-sub {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: -10px;
+    margin-bottom: 16px;
+    font-weight: 400;
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--text-sub);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 1.5px solid var(--pink-mid);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    background: var(--white);
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: var(--pink);
+  }
+
+  .search-input::placeholder { color: #C0C0C0; }
+
+  /* FILTER CHIPS */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 14px;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: var(--pink-light);
+    color: var(--pink);
+    border-color: var(--pink-light);
+    font-family: 'Noto Sans KR', sans-serif;
+    white-space: nowrap;
+  }
+
+  .chip.active {
+    background: var(--pink);
+    color: var(--white);
+    border-color: var(--pink);
+  }
+
+  .chip:active { transform: scale(0.96); }
+
+  /* COUNTER */
+  .count-row {
+    padding: 12px 20px 4px;
+    font-size: 12px;
+    color: var(--text-sub);
+  }
+
+  .count-row span { color: var(--pink); font-weight: 700; }
+
+  /* GRID */
+  .grid {
+    padding: 8px 16px 100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    border: 1.5px solid rgba(255,107,138,0.07);
+    display: flex;
+    flex-direction: column;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:active { transform: scale(0.97); box-shadow: 0 1px 6px rgba(255,107,138,0.10); }
+
+  .card-logo {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--pink-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-logo-placeholder {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--pink);
+  }
+
+  .coupon-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--green);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 20px;
+    font-family: 'Noto Sans KR', sans-serif;
+    box-shadow: 0 2px 6px rgba(76,175,125,0.3);
+  }
+
+  .card-body {
+    padding: 10px 12px 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.3;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .card-desc {
+    font-size: 11px;
+    color: var(--text-sub);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .tag {
+    background: var(--pink-light);
+    color: var(--pink);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 6px;
+  }
+
+  .tag.green {
+    background: var(--green-light);
+    color: var(--green);
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-sub);
+  }
+
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; color: var(--text); }
+  .empty-sub { font-size: 13px; }
+
+  /* FOOTER SUPPORT BANNER */
+  .support-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(135deg, var(--pink) 0%, #FF8FA8 100%);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 99;
+    box-shadow: 0 -4px 20px rgba(255,107,138,0.25);
+  }
+
+  .banner-left { font-size: 12px; line-height: 1.5; }
+  .banner-left strong { font-weight: 700; font-size: 13px; display: block; }
+  .banner-heart { font-size: 20px; margin-right: 6px; }
+
+  @media (min-width: 480px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (min-width: 768px) {
+    .header { padding: 20px 32px 0; }
+    .grid { padding: 8px 32px 100px; grid-template-columns: repeat(4, 1fr); }
+    .count-row { padding: 12px 32px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-top">
+    <div class="logo">
+      <span class="logo-paw">🐾</span> SOBY
+    </div>
+    <div class="header-badge">쏘바이 온라인 펫페어 2026</div>
+  </div>
+  <p class="header-sub">참여 브랜드의 매출 10%가 동물 구조에 쓰여요</p>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="searchInput" placeholder="브랜드 이름으로 검색해보세요" oninput="render()">
+  </div>
+
+  <div class="filter-row" id="filterRow"></div>
+</header>
+
+<div class="count-row" id="countRow"></div>
+
+<div class="grid" id="grid"></div>
+
+<div class="support-banner">
+  <span class="banner-heart">🐶</span>
+  <div class="banner-left">
+    <strong>구매하면 동물을 구해요</strong>
+    좋은 물품 저렴하게 구매하고 쏘바이에 후원해 보세요
+  </div>
+</div>
+
+<script>
+const CATEGORIES = ['전체', '사료', '간식', '리빙', '의류'];
+
+const BRANDS = [
+  {
+    id: 1,
+    name: '쏘바이',
+    logo: 'data:image/jpeg;base64,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',
+    desc: '반려동물과 함께하는 일상을 더 따뜻하게',
+    categories: ['리빙', '간식'],
+    coupon: '신제품 할인',
+    url: 'https://www.instagram.com/soby2017/'
+  },
+  {
+    id: 2,
+    name: 'Pawsome',
+    logo: null,
+    desc: '수의사가 설계한 건강한 자연식 사료 브랜드',
+    categories: ['사료', '간식'],
+    coupon: '10% 할인',
+    url: 'https://example.com/pawsome'
+  },
+  {
+    id: 3,
+    name: '냥이부엌',
+    logo: null,
+    desc: '고양이를 위한 수제 간식 전문 브랜드',
+    categories: ['간식'],
+    coupon: '5,000원 쿠폰',
+    url: 'https://example.com/nyangs'
+  },
+  {
+    id: 4,
+    name: 'PetHome',
+    logo: null,
+    desc: '반려동물과 함께하는 감각적인 리빙 소품',
+    categories: ['리빙'],
+    coupon: null,
+    url: 'https://example.com/pethome'
+  },
+  {
+    id: 5,
+    name: 'FurStyle',
+    logo: null,
+    desc: '유기견 출신 모델과 함께 만드는 반려동물 패션',
+    categories: ['의류'],
+    coupon: '15% 할인',
+    url: 'https://example.com/furstyle'
+  },
+  {
+    id: 6,
+    name: '멍냥상회',
+    logo: null,
+    desc: '강아지·고양이 모두를 위한 국산 수제 간식',
+    categories: ['간식', '사료'],
+    coupon: null,
+    url: 'https://example.com/meongnyang'
+  },
+  {
+    id: 7,
+    name: 'Cozyden',
+    logo: null,
+    desc: '포근한 잠자리를 선물하는 프리미엄 펫 침구',
+    categories: ['리빙', '의류'],
+    coupon: '10% 할인',
+    url: 'https://example.com/cozyden'
+  },
+  {
+    id: 8,
+    name: '댕댕옷장',
+    logo: null,
+    desc: '소형견부터 대형견까지 사이즈 다양한 펫 의류',
+    categories: ['의류'],
+    coupon: '신규 10% 할인',
+    url: 'https://example.com/ddaeng'
+  }
+];
+
+let activeFilter = '전체';
+
+function initFilters() {
+  const row = document.getElementById('filterRow');
+  row.innerHTML = CATEGORIES.map(c => `
+    <button class="chip ${c === activeFilter ? 'active' : ''}" onclick="setFilter('${c}')">${c}</button>
+  `).join('');
+}
+
+function setFilter(cat) {
+  activeFilter = cat;
+  initFilters();
+  render();
+}
+
+function render() {
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  const grid = document.getElementById('grid');
+  const countRow = document.getElementById('countRow');
+
+  let filtered = BRANDS.filter(b => {
+    const matchCat = activeFilter === '전체' || b.categories.includes(activeFilter);
+    const matchSearch = !query ||
+      b.name.toLowerCase().includes(query) ||
+      b.desc.toLowerCase().includes(query) ||
+      b.categories.some(c => c.includes(query));
+    return matchCat && matchSearch;
+  });
+
+  countRow.innerHTML = `브랜드 <span>${filtered.length}</span>개`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🐾</div>
+        <div class="empty-title">검색 결과가 없어요</div>
+        <div class="empty-sub">다른 키워드로 검색해보세요</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((b, i) => `
+    <div class="card" style="animation-delay:${i * 0.05}s" onclick="window.open('${b.url}','_blank')">
+      <div class="card-logo">
+        ${b.logo
+          ? `<img src="${b.logo}" alt="${b.name}">`
+          : `<div class="card-logo-placeholder">${b.name.slice(0,2).toUpperCase()}</div>`
+        }
+        ${b.coupon ? `<span class="coupon-badge">${b.coupon}</span>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${b.name}</div>
+        <div class="card-desc">${b.desc}</div>
+        <div class="card-tags">
+          ${b.categories.map(c => `<span class="tag">${c}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+initFilters();
+render();
+</script>
+</body>
+</html>
