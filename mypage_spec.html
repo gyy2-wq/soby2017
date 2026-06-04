@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마미든든 · 마이페이지 기획안</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif; font-size: 14px; background: #f5f5f3; color: #1a1a1a; display: flex; height: 100vh; overflow: hidden; }
+
+.sidebar { width: 200px; min-width: 200px; background: #fff; border-right: 1px solid #e8e8e4; display: flex; flex-direction: column; }
+.sidebar-logo { padding: 18px 20px; font-size: 14px; font-weight: 700; border-bottom: 1px solid #e8e8e4; }
+.sidebar-section { padding: 12px 20px 4px; font-size: 10px; font-weight: 600; color: #bbb; letter-spacing: 0.06em; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 20px; font-size: 12px; color: #666; cursor: pointer; border-left: 2px solid transparent; }
+.nav-item:hover { background: #f8f8f6; color: #1a1a1a; }
+.nav-item.active { color: #1a1a1a; font-weight: 600; background: #f8f8f6; border-left: 2px solid #1a1a1a; }
+.sid { font-size: 9px; color: #ccc; background: #f0f0ec; padding: 1px 5px; border-radius: 3px; margin-left: auto; }
+
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { background: #fff; border-bottom: 1px solid #e8e8e4; padding: 0 28px; height: 50px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.topbar-title { font-size: 14px; font-weight: 600; }
+.topbar-path { font-size: 12px; color: #bbb; }
+
+.content { flex: 1; overflow-y: auto; padding: 32px; }
+.page { display: none; }
+.page.active { display: flex; gap: 40px; align-items: flex-start; }
+
+/* 폰 프레임 */
+.phone-wrap { flex-shrink: 0; }
+.phone-label { font-size: 10px; font-weight: 600; color: #bbb; margin-bottom: 10px; letter-spacing: 0.06em; }
+.phone { width: 320px; background: #fff; border: 1.5px solid #ddd; border-radius: 36px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+.phone-notch { height: 36px; background: #fff; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f5f5f3; }
+.phone-notch-bar { width: 80px; height: 14px; background: #1a1a1a; border-radius: 999px; }
+.phone-screen { min-height: 560px; background: #f9f9f7; }
+
+.app-nav { background: #fff; border-bottom: 1px solid #f0f0ec; padding: 0 16px; height: 44px; display: flex; align-items: center; justify-content: space-between; }
+.app-nav-title { font-size: 14px; font-weight: 700; }
+.app-nav-back { font-size: 12px; color: #666; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.app-nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* 마이 메인 */
+.profile-area { padding: 24px 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: #fff; border-bottom: 8px solid #f5f5f3; }
+.profile-img { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg,#FFD6E7,#FFA8C9); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.profile-nick { font-size: 16px; font-weight: 700; }
+.profile-sub { font-size: 12px; color: #aaa; }
+
+.menu-section { background: #fff; margin-bottom: 8px; }
+.menu-section-label { padding: 12px 20px 4px; font-size: 11px; font-weight: 600; color: #bbb; }
+.menu-item { display: flex; align-items: center; padding: 14px 20px; cursor: pointer; border-bottom: 1px solid #f5f5f3; }
+.menu-item:last-child { border-bottom: none; }
+.menu-item:hover { background: #fafaf8; }
+.menu-item-label { font-size: 14px; color: #1a1a1a; flex: 1; }
+.menu-item-value { font-size: 12px; color: #bbb; margin-right: 6px; }
+.chevron { width: 14px; height: 14px; stroke: #ccc; fill: none; stroke-width: 2; }
+
+/* 계정 정보 수정 */
+.edit-section { background: #fff; margin-bottom: 8px; }
+.photo-edit-area { display: flex; flex-direction: column; align-items: center; padding: 24px 20px 20px; gap: 10px; border-bottom: 1px solid #f5f5f3; }
+.photo-relative { position: relative; width: 72px; height: 72px; }
+.photo-edit-btn { position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; background: #1a1a1a; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.photo-edit-btn svg { width: 12px; height: 12px; stroke: #fff; fill: none; stroke-width: 2; }
+.photo-hint { font-size: 12px; color: #aaa; }
+.field-wrap { padding: 16px 20px; border-bottom: 1px solid #f5f5f3; }
+.field-label { font-size: 11px; font-weight: 600; color: #888; margin-bottom: 8px; }
+.field-input-wrap { position: relative; }
+.field-input { width: 100%; padding: 11px 36px 11px 12px; border: 1.5px solid #e0e0dc; border-radius: 10px; font-size: 14px; color: #1a1a1a; background: #fff; outline: none; }
+.field-input:focus { border-color: #1a1a1a; }
+.field-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.field-clear svg { width: 10px; height: 10px; stroke: #fff; fill: none; stroke-width: 3; }
+.field-hint { font-size: 11px; color: #bbb; margin-top: 6px; }
+.field-hint.error { color: #ff4d4d; }
+.field-hint.ok { color: #4CD964; }
+.save-btn { display: block; width: calc(100% - 40px); margin: 16px 20px 20px; padding: 14px; background: #1a1a1a; color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; }
+.save-btn.disabled { opacity: 0.35; }
+
+/* 가입된 모임 */
+.meetup-list-wrap { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.meetup-card { background: #fff; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; }
+.meetup-thumb { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.meetup-name { font-size: 13px; font-weight: 600; }
+.meetup-meta { font-size: 11px; color: #aaa; margin-top: 3px; }
+.meetup-role { padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; margin-left: auto; flex-shrink: 0; }
+.role-l { background: #eeedfe; color: #3c3489; }
+.role-m { background: #e8f5ed; color: #1a6640; }
+
+/* 공지사항 */
+.notice-list { background: #fff; }
+.notice-item { padding: 14px 20px; border-bottom: 1px solid #f5f5f3; cursor: pointer; }
+.notice-item:last-child { border-bottom: none; }
+.notice-title { font-size: 13px; color: #1a1a1a; margin-bottom: 4px; }
+.notice-date { font-size: 11px; color: #bbb; }
+
+/* 고객센터 */
+.cs-header { background: #fff; padding: 16px 20px 12px; border-bottom: 8px solid #f5f5f3; }
+.cs-header-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.cs-header-sub { font-size: 12px; color: #aaa; }
+.faq-section { background: #fff; margin-bottom: 8px; }
+.faq-section-label { padding: 12px 20px 4px; font-size: 11px; font-weight: 600; color: #bbb; }
+.faq-item { padding: 13px 20px; border-bottom: 1px solid #f5f5f3; cursor: pointer; display: flex; align-items: center; }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { font-size: 13px; color: #1a1a1a; flex: 1; }
+.faq-chevron { width: 14px; height: 14px; stroke: #ccc; fill: none; stroke-width: 2; }
+.faq-answer { padding: 12px 20px; background: #fafaf8; border-bottom: 1px solid #f5f5f3; font-size: 12px; color: #555; line-height: 1.7; display: none; }
+.faq-answer.open { display: block; }
+
+/* 설정 */
+.setting-section { background: #fff; margin-bottom: 8px; }
+.setting-item { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid #f5f5f3; }
+.setting-item:last-child { border-bottom: none; }
+.setting-label { font-size: 14px; color: #1a1a1a; flex: 1; }
+.setting-label.danger { color: #ff4d4d; }
+.setting-value { font-size: 12px; color: #bbb; }
+.toggle { width: 40px; height: 22px; border-radius: 999px; background: #4CD964; position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+.toggle.off { background: #ddd; }
+.toggle-knob { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: all 0.2s; }
+.toggle.off .toggle-knob { right: auto; left: 2px; }
+
+/* ── 스펙 ── */
+.spec-wrap { flex: 1; min-width: 0; }
+.spec-divider { border: none; border-top: 2px dashed #e0e0da; margin-bottom: 28px; }
+.spec-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 18px; }
+.spec-badge { font-size: 10px; font-weight: 700; color: #888; background: #efefeb; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.05em; }
+.spec-title { font-size: 17px; font-weight: 700; }
+.spec-info-row { display: flex; border: 1px solid #e8e8e4; border-radius: 10px; overflow: hidden; margin-bottom: 20px; background: #fff; }
+.spec-info-cell { flex: 1; padding: 11px 14px; border-right: 1px solid #e8e8e4; }
+.spec-info-cell:last-child { border-right: none; }
+.sil { font-size: 10px; color: #bbb; font-weight: 600; margin-bottom: 4px; }
+.siv { font-size: 12px; color: #444; line-height: 1.5; }
+.spec-block { margin-bottom: 20px; }
+.spec-section-title { font-size: 11px; font-weight: 700; color: #888; margin-bottom: 8px; letter-spacing: 0.04em; }
+.flow-wrap { padding: 12px 14px; background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; display: flex; flex-direction: column; gap: 8px; }
+.flow-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.flow-screen { padding: 4px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 11px; color: #555; white-space: nowrap; }
+.flow-screen.curr { border-color: #1a1a1a; font-weight: 700; color: #1a1a1a; background: #f8f8f6; }
+.flow-arrow { color: #bbb; font-size: 13px; }
+.flow-trigger { font-size: 10px; color: #aaa; }
+.func-table { width: 100%; border-collapse: collapse; border: 1px solid #e8e8e4; border-radius: 10px; overflow: hidden; background: #fff; }
+.func-table th { padding: 8px 12px; font-size: 10px; font-weight: 600; color: #888; background: #fafaf8; border-bottom: 1px solid #e8e8e4; text-align: left; }
+.func-table td { padding: 10px 12px; font-size: 12px; color: #333; border-bottom: 1px solid #f0f0ec; vertical-align: top; line-height: 1.6; }
+.func-table tr:last-child td { border-bottom: none; }
+.p0 { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #1a1a1a; color: #fff; }
+.p1 { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #efefeb; color: #888; }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; }
+.tag-nav { background: #e8f0fe; color: #1a5cb8; }
+.tag-display { background: #e8f5ed; color: #1a6640; }
+.tag-action { background: #fff3e0; color: #a05000; }
+.exception-box { padding: 12px 14px; background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; font-size: 12px; color: #555; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">마밋 기획안</div>
+  <div class="sidebar-section">마이페이지</div>
+  <div class="nav-item active"  data-page="main"          onclick="gotoPage('main')">메인 <span class="sid">MY-001</span></div>
+  <div class="nav-item"         data-page="edit"          onclick="gotoPage('edit')">계정 정보 수정 <span class="sid">MY-002</span></div>
+  <div class="nav-item"         data-page="meetup"        onclick="gotoPage('meetup')">가입된 모임 <span class="sid">MY-003</span></div>
+  <div class="nav-item"         data-page="bookmark"      onclick="gotoPage('bookmark')">관심 모임 <span class="sid">MY-003-B</span></div>
+  <div class="nav-item"         data-page="recent"        onclick="gotoPage('recent')">최근 본 모임 <span class="sid">MY-003-C</span></div>
+  <div class="nav-item"         data-page="cs"            onclick="gotoPage('cs')">고객센터 <span class="sid">MY-004</span></div>
+  <div class="nav-item"         data-page="notice"        onclick="gotoPage('notice')">공지사항 <span class="sid">MY-005</span></div>
+  <div class="nav-item"         data-page="notice-detail" onclick="gotoPage('notice-detail')" style="padding-left:32px;font-size:11px;color:#aaa;">└ 공지사항 상세 <span class="sid">MY-005-D</span></div>
+  <div class="nav-item"         data-page="setting"       onclick="gotoPage('setting')">설정 <span class="sid">MY-006</span></div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="tb-title">마이페이지</div>
+    <div class="topbar-path"  id="tb-path"></div>
+  </div>
+  <div class="content">
+
+    <!-- MY-001 메인 -->
+    <div id="page-main" class="page active">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav"><div class="app-nav-title">마이</div></div>
+            <div class="menu-item" style="padding:16px 20px;background:#fff;border-bottom:1px solid #f5f5f3;cursor:pointer;" onclick="gotoPage('edit')">
+              <div class="profile-img" style="width:48px;height:48px;font-size:22px;flex-shrink:0;margin-right:12px;">🌸</div>
+              <div style="flex:1;">
+                <div id="display-nick" style="font-size:15px;font-weight:700;">햇살맘</div>
+                <div style="font-size:12px;color:#aaa;margin-top:2px;">잠실동</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div style="display:flex;background:#fff;border-bottom:8px solid #f5f5f3;">
+              <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:4px;border-right:1px solid #f0f0ec;cursor:pointer;" onclick="gotoPage('meetup')">
+                <div style="font-size:18px;font-weight:700;">2</div>
+                <div style="font-size:11px;color:#aaa;">내 모임</div>
+              </div>
+              <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:4px;border-right:1px solid #f0f0ec;cursor:pointer;" onclick="gotoPage('bookmark')">
+                <div style="font-size:18px;font-weight:700;">7</div>
+                <div style="font-size:11px;color:#aaa;">관심 모임</div>
+              </div>
+              <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;" onclick="gotoPage('recent')">
+                <div style="font-size:18px;font-weight:700;">5</div>
+                <div style="font-size:11px;color:#aaa;">최근 본</div>
+              </div>
+            </div>
+            <div class="menu-section">
+              <div class="menu-section-label">정보</div>
+              <div class="menu-item" onclick="gotoPage('cs')">
+                <span class="menu-item-label">고객센터</span>
+                <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="menu-item" onclick="gotoPage('notice')">
+                <span class="menu-item-label">공지사항</span>
+                <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="menu-item" onclick="gotoPage('setting')">
+                <span class="menu-item-label">설정</span>
+                <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- 푸터 -->
+            <div style="padding:20px 20px 28px;background:#f9f9f7;border-top:1px solid #f0f0ec;">
+              <div id="biz-toggle" onclick="document.getElementById('biz-info').style.display=document.getElementById('biz-info').style.display==='none'?'block':'none'; document.getElementById('biz-chevron').style.transform=document.getElementById('biz-info').style.display==='block'?'rotate(180deg)':'rotate(0deg)'" style="display:flex;align-items:center;gap:4px;cursor:pointer;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#888;">(주)마미든든</span>
+                <svg id="biz-chevron" viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#aaa;fill:none;stroke-width:2;transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div id="biz-info" style="display:none;font-size:10px;color:#aaa;line-height:1.9;margin-bottom:10px;">
+                대표자 홍길동<br>
+                사업자등록번호 000-00-00000<br>
+                통신판매업 신고번호 0000-서울강남-0000<br>
+                주소 서울특별시 강남구 테헤란로 00길 00<br>
+                이메일 hello@mamideudeun.com
+              </div>
+              <div style="display:flex;gap:12px;margin-bottom:10px;">
+                <span style="font-size:11px;color:#888;text-decoration:underline;cursor:pointer;">개인정보처리방침</span>
+                <span style="font-size:11px;color:#888;text-decoration:underline;cursor:pointer;">이용약관</span>
+              </div>
+              <div style="font-size:10px;color:#bbb;line-height:1.7;">마밋은 모임 운영 주체가 아니며, 모임 활동 중 발생하는 사고·분쟁에 대해 책임을 지지 않습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-001</span><span class="spec-title">마이페이지 메인</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">프로필 확인 및 주요 메뉴 진입점을 제공한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">하단 탭바 › 마이</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">화면 전환</div>
+          <div class="flow-wrap">
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">계정 정보 수정 (MY-002)</div><div class="flow-trigger">프로필 행 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">가입된 모임 (MY-003)</div><div class="flow-trigger">내 모임 숫자 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">관심 모임 (MY-003-B)</div><div class="flow-trigger">관심 모임 숫자 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">최근 본 모임 (MY-003-C)</div><div class="flow-trigger">최근 본 숫자 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">고객센터 (MY-004)</div><div class="flow-trigger">고객센터 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">공지사항 (MY-005)</div><div class="flow-trigger">공지사항 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">설정 (MY-006)</div><div class="flow-trigger">설정 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">개인정보처리방침 (웹뷰)</div><div class="flow-trigger">개인정보처리방침 링크 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">메인</div><div class="flow-arrow">→</div><div class="flow-screen">이용약관 (웹뷰)</div><div class="flow-trigger">이용약관 링크 탭</div></div>
+          </div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>프로필 정보</td><td>프로필 사진, 닉네임, 동네(OO동)를 노출한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-nav">이동</span></td><td>계정 정보 수정 진입</td><td>프로필 행 탭 시 계정 정보 수정(MY-002)으로 이동한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>활동 통계</td><td>내 모임 수, 관심 모임 수, 최근 본 모임 수를 가로로 노출한다. 각 숫자 탭 시 해당 화면으로 이동한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>사업자 정보</td><td>회사명 탭 시 드롭다운으로 펼쳐진다. 노출 항목: 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 이메일.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-nav">이동</span></td><td>개인정보처리방침</td><td>탭 시 앱 내 웹뷰로 개인정보처리방침 페이지를 노출한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-nav">이동</span></td><td>이용약관</td><td>탭 시 앱 내 웹뷰로 이용약관 페이지를 노출한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>법적 고지</td><td>푸터 하단에 "마밋은 모임 운영 주체가 아니며, 모임 활동 중 발생하는 사고·분쟁에 대해 책임을 지지 않습니다." 문구를 고정 노출한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-002 계정 정보 수정 -->
+    <div id="page-edit" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('main')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 마이페이지
+              </div>
+            </div>
+            <div style="padding:16px 20px 0;font-size:18px;font-weight:700;">계정 정보 수정</div>
+            <div class="photo-edit-area">
+              <div class="photo-relative">
+                <div class="profile-img" style="width:72px;height:72px;font-size:28px;">🌸</div>
+                <div class="photo-edit-btn">
+                  <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </div>
+              </div>
+              <div class="photo-hint">탭하여 프로필 사진 변경</div>
+            </div>
+            <div class="field-wrap">
+              <div class="field-label">닉네임</div>
+              <div class="field-input-wrap">
+                <input class="field-input" id="nick-input" value="햇살맘" maxlength="10" oninput="checkNick(this)">
+                <div class="field-clear" onclick="document.getElementById('nick-input').value='';checkNick(document.getElementById('nick-input'))">
+                  <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+              </div>
+              <div class="field-hint" id="nick-hint">2~10자, 한글/영문/숫자 사용 가능</div>
+            </div>
+            <button class="save-btn" id="save-btn" onclick="saveEdit()">저장</button>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-002</span><span class="spec-title">계정 정보 수정</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">프로필 사진과 닉네임을 수정한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">마이페이지 메인(MY-001) › 계정 정보 수정</div></div>
+          <div class="spec-info-cell"><div class="sil">뒤로가기</div><div class="siv">MY-001으로 이동. 저장하지 않은 변경은 유지하지 않는다.</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">화면 전환</div>
+          <div class="flow-wrap">
+            <div class="flow-row"><div class="flow-screen">마이페이지 메인 (MY-001)</div><div class="flow-arrow">→</div><div class="flow-screen curr">계정 정보 수정 (현재)</div></div>
+            <div class="flow-row"><div class="flow-screen curr">계정 정보 수정 (현재)</div><div class="flow-arrow">→</div><div class="flow-screen">사진 선택 시트</div><div class="flow-trigger">프로필 사진 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">계정 정보 수정 (현재)</div><div class="flow-arrow">→</div><div class="flow-screen">마이페이지 메인 (MY-001)</div><div class="flow-trigger">저장 완료 또는 뒤로가기</div></div>
+          </div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>프로필 사진 변경</td><td>사진 탭 시 하단 시트로 촬영 / 앨범에서 선택 / 기본 이미지로 변경 옵션을 노출한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>현재 닉네임</td><td>입력 필드에 현재 닉네임을 기본값으로 노출한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>닉네임 유효성 검사</td><td>2~10자, 한글/영문/숫자만 허용. 조건 미충족 시 저장 버튼 비활성화 및 안내 문구 노출.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>저장</td><td>저장 완료 후 마이페이지 메인으로 이동. 변경된 프로필 사진과 닉네임을 메인에 즉시 반영한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">예외 케이스</div>
+          <div class="exception-box">
+            · 닉네임 2자 미만 → "닉네임은 2자 이상 입력해 주세요." 노출, 저장 버튼 비활성화<br>
+            · 허용되지 않는 문자 포함 → "한글, 영문, 숫자만 사용할 수 있어요." 노출<br>
+            · 이미 사용 중인 닉네임 → "이미 사용 중인 닉네임이에요." 노출
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-003 가입된 모임 -->
+    <div id="page-meetup" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('main')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 마이페이지
+              </div>
+            </div>
+            <div style="padding:16px 16px 8px;font-size:18px;font-weight:700;">가입된 모임</div>
+            <div class="meetup-list-wrap">
+              <div class="meetup-card">
+                <div class="meetup-thumb" style="background:linear-gradient(135deg,#FFE4B5,#FFB347);">🌿</div>
+                <div><div class="meetup-name">송파 수다 모임</div><div class="meetup-meta">수다 · 송파구 · 가입 2024.11.05</div></div>
+                <span class="meetup-role role-l">모임장</span>
+              </div>
+              <div class="meetup-card">
+                <div class="meetup-thumb" style="background:linear-gradient(135deg,#B5EAD7,#6BCBA0);">🌸</div>
+                <div><div class="meetup-name">잠실 나들이 클럽</div><div class="meetup-meta">나들이 · 송파구 · 가입 2024.12.01</div></div>
+                <span class="meetup-role role-m">멤버</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-003</span><span class="spec-title">가입된 모임</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">내가 가입한 모임 목록을 확인한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">마이페이지 메인(MY-001) › 가입된 모임</div></div>
+          <div class="spec-info-cell"><div class="sil">뒤로가기</div><div class="siv">마이페이지 메인(MY-001)으로 이동</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>모임 목록</td><td>노출 항목: 모임명, 카테고리, 지역, 가입 일시, 역할(모임장/멤버).</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-nav">이동</span></td><td>모임 상세 진입</td><td>모임 카드 탭 시 해당 모임 상세로 이동한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">예외 케이스</div>
+          <div class="exception-box">· 가입된 모임이 없는 경우 → "아직 가입한 모임이 없어요." 문구 및 모임 탐색 버튼 노출</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-004 고객센터 -->
+    <div id="page-cs" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('main')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 마이페이지
+              </div>
+            </div>
+            <div class="cs-header">
+              <div class="cs-header-title">고객센터</div>
+              <div class="cs-header-sub">자주 묻는 질문을 확인해 보세요.</div>
+            </div>
+            <div class="faq-section">
+              <div class="faq-section-label">계정</div>
+              <div class="faq-item" onclick="toggleFaq(this)">
+                <span class="faq-q">닉네임은 어떻게 바꾸나요?</span>
+                <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="faq-answer">마이페이지 › 계정 정보 수정에서 닉네임을 변경할 수 있어요.</div>
+              <div class="faq-item" onclick="toggleFaq(this)">
+                <span class="faq-q">회원 탈퇴는 어떻게 하나요?</span>
+                <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="faq-answer">마이페이지 › 설정 › 회원 탈퇴에서 진행할 수 있어요. 단, 모임장인 경우 모임장 위임 또는 모임 삭제 후 탈퇴할 수 있어요.</div>
+            </div>
+            <div class="faq-section">
+              <div class="faq-section-label">모임</div>
+              <div class="faq-item" onclick="toggleFaq(this)">
+                <span class="faq-q">모임을 삭제할 수 있나요?</span>
+                <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="faq-answer">모임장만 모임을 삭제할 수 있어요. 모임 상세 › 설정에서 삭제할 수 있으며, 삭제 후 복구는 불가해요.</div>
+              <div class="faq-item" onclick="toggleFaq(this)">
+                <span class="faq-q">모임 신고는 어떻게 하나요?</span>
+                <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="faq-answer">모임 상세 화면 우측 상단 더보기(···) 버튼에서 신고하기를 선택할 수 있어요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-004</span><span class="spec-title">고객센터</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">FAQ를 통해 서비스 이용 관련 문의를 해결한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">마이페이지 메인(MY-001) › 고객센터</div></div>
+          <div class="spec-info-cell"><div class="sil">구현 방식</div><div class="siv">앱 내 웹뷰(WebView)로 어드민에서 등록한 FAQ를 노출한다.</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>FAQ 목록</td><td>어드민에서 등록한 FAQ를 카테고리별로 노출한다. FAQ 카테고리: 계정, 모임, 채팅, 기타.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>FAQ 펼침/접힘</td><td>질문 탭 시 답변이 펼쳐진다. 다시 탭 시 접힌다. 아코디언 형태로 하나씩 열린다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>웹뷰 렌더링</td><td>네이티브 앱 내 웹뷰로 노출된다. 상단 네이티브 네비게이션 바는 유지한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">어드민 연계</div>
+          <div class="exception-box">
+            · FAQ 콘텐츠는 어드민 고객센터 관리에서 등록/수정/삭제한다.<br>
+            · 등록된 FAQ가 없는 경우 → "등록된 FAQ가 없어요." 문구 노출
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-005 공지사항 목록 -->
+    <div id="page-notice" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('main')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 마이페이지
+              </div>
+            </div>
+            <div style="padding:16px 16px 8px;font-size:18px;font-weight:700;">공지사항</div>
+            <div class="notice-list">
+              <div class="notice-item" onclick="openNotice('서비스 이용약관 개정 안내','2025.05.10','2025년 5월 10일부로 마미든든 서비스 이용약관이 일부 개정됩니다. 주요 변경 내용은 다음과 같습니다.\n\n1. 제3조 서비스 이용 범위 변경\n2. 제7조 모임 운영 정책 추가\n\n개정 약관은 공지일로부터 7일 후 시행되며, 계속 이용 시 동의한 것으로 간주됩니다.')">
+                <div class="notice-title">서비스 이용약관 개정 안내</div><div class="notice-date">2025.05.10</div>
+              </div>
+              <div class="notice-item" onclick="openNotice('마미든든 v1.2 업데이트 안내','2025.04.25','마미든든 v1.2 업데이트가 완료되었습니다.\n\n주요 업데이트 내용\n- 모임 채팅 기능 개선\n- 프로필 사진 업로드 오류 수정\n- 앱 속도 및 안정성 향상\n\n불편을 드려 죄송합니다. 앞으로도 더 나은 서비스를 제공하겠습니다.')">
+                <div class="notice-title">마미든든 v1.2 업데이트 안내</div><div class="notice-date">2025.04.25</div>
+              </div>
+              <div class="notice-item" onclick="openNotice('개인정보 처리방침 변경 안내','2025.03.15','개인정보 처리방침이 변경되었습니다. 변경된 내용을 확인해 주세요.')">
+                <div class="notice-title">개인정보 처리방침 변경 안내</div><div class="notice-date">2025.03.15</div>
+              </div>
+              <div class="notice-item" onclick="openNotice('마미든든 정식 오픈 안내','2025.01.20','마미든든이 정식 오픈했습니다! 함께해 주셔서 감사합니다.')">
+                <div class="notice-title">마미든든 정식 오픈 안내</div><div class="notice-date">2025.01.20</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-005</span><span class="spec-title">공지사항 목록</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">어드민에서 등록한 공지를 목록으로 확인한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">마이페이지 메인(MY-001) › 공지사항</div></div>
+          <div class="spec-info-cell"><div class="sil">콘텐츠 출처</div><div class="siv">어드민 공지사항 관리에서 등록/수정/삭제한 데이터를 노출한다.</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">화면 전환</div>
+          <div class="flow-wrap">
+            <div class="flow-row"><div class="flow-screen curr">공지사항 목록 (현재)</div><div class="flow-arrow">→</div><div class="flow-screen">공지사항 상세 (MY-005-D)</div><div class="flow-trigger">공지 타이틀 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">공지사항 목록 (현재)</div><div class="flow-arrow">→</div><div class="flow-screen">마이페이지 메인 (MY-001)</div><div class="flow-trigger">뒤로가기</div></div>
+          </div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>공지 목록</td><td>어드민에서 등록한 공지를 노출한다. 노출 항목: 제목, 등록일. 등록일 기준 내림차순 정렬.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-nav">이동</span></td><td>공지 상세 진입</td><td>공지 타이틀 탭 시 공지 상세(MY-005-D)로 이동한다.</td></tr>
+              <tr><td><span class="p1">P1</span></td><td><span class="tag tag-display">노출</span></td><td>읽지 않음 표시</td><td>읽지 않은 공지에 빨간 점을 노출한다. 탭 시 읽음 처리. (P1 · 1차 개발 범위 외)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">예외 케이스</div>
+          <div class="exception-box">· 등록된 공지가 없는 경우 → "등록된 공지사항이 없어요." 문구 노출</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-005-D 공지사항 상세 -->
+    <div id="page-notice-detail" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('notice')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 공지사항
+              </div>
+            </div>
+            <div style="padding:20px 20px 0;">
+              <div id="notice-title" style="font-size:16px;font-weight:700;line-height:1.5;margin-bottom:8px;"></div>
+              <div id="notice-date" style="font-size:12px;color:#aaa;padding-bottom:16px;border-bottom:1px solid #f0f0ec;"></div>
+              <div id="notice-body" style="font-size:13px;color:#444;line-height:1.8;margin-top:16px;white-space:pre-line;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-005-D</span><span class="spec-title">공지사항 상세</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">선택한 공지의 전체 내용을 확인한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">공지사항 목록(MY-005) › 공지 타이틀 탭</div></div>
+          <div class="spec-info-cell"><div class="sil">뒤로가기</div><div class="siv">공지사항 목록(MY-005)으로 이동</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">화면 전환</div>
+          <div class="flow-wrap">
+            <div class="flow-row"><div class="flow-screen">공지사항 목록 (MY-005)</div><div class="flow-arrow">→</div><div class="flow-screen curr">공지사항 상세 (현재)</div><div class="flow-trigger">공지 타이틀 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">공지사항 상세 (현재)</div><div class="flow-arrow">→</div><div class="flow-screen">공지사항 목록 (MY-005)</div><div class="flow-trigger">뒤로가기</div></div>
+          </div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>공지 상세 내용</td><td>어드민에서 등록한 제목, 등록일, 본문 내용을 노출한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-003-B 관심 모임 -->
+    <div id="page-bookmark" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('main')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 마이페이지
+              </div>
+            </div>
+            <div style="padding:16px 16px 8px;font-size:18px;font-weight:700;">관심 모임</div>
+            <div class="meetup-list-wrap">
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#FFE4B5,#FFB347);">🌿</div><div><div class="meetup-name">송파 수다 모임</div><div class="meetup-meta">수다 · 송파구</div></div></div>
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#B5EAD7,#6BCBA0);">🌸</div><div><div class="meetup-name">잠실 나들이 클럽</div><div class="meetup-meta">나들이 · 송파구</div></div></div>
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#FFDAC1,#FF9A76);">🍱</div><div><div class="meetup-name">강남 먹거리 모임</div><div class="meetup-meta">먹거리 · 강남구</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-003-B</span><span class="spec-title">관심 모임</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">찜한 모임 목록을 확인하고 모임 상세로 이동한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">마이페이지 메인(MY-001) › 관심 모임 숫자 탭</div></div>
+          <div class="spec-info-cell"><div class="sil">뒤로가기</div><div class="siv">마이페이지 메인(MY-001)으로 이동</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">화면 전환</div>
+          <div class="flow-wrap">
+            <div class="flow-row"><div class="flow-screen">마이페이지 메인 (MY-001)</div><div class="flow-arrow">→</div><div class="flow-screen curr">관심 모임 (현재)</div><div class="flow-trigger">관심 모임 숫자 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">관심 모임 (현재)</div><div class="flow-arrow">→</div><div class="flow-screen">모임 상세</div><div class="flow-trigger">모임 카드 탭</div></div>
+          </div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>관심 모임 목록</td><td>유저가 찜한 모임만 노출한다. 찜한 순서(최신순) 기준 정렬. 노출 항목: 모임명, 카테고리, 지역.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-nav">이동</span></td><td>모임 상세 진입</td><td>모임 카드 탭 시 해당 모임 상세로 이동한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">예외 케이스</div>
+          <div class="exception-box">
+            · 찜한 모임이 없는 경우 → "관심 있는 모임을 찜해 보세요." 문구 노출<br>
+            · 찜한 모임이 삭제된 경우 → 목록에서 자동 제거
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-003-C 최근 본 모임 -->
+    <div id="page-recent" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('main')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 마이페이지
+              </div>
+            </div>
+            <div style="padding:16px 16px 8px;font-size:18px;font-weight:700;">최근 본 모임</div>
+            <div class="meetup-list-wrap">
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#FFE4B5,#FFB347);">🌿</div><div><div class="meetup-name">송파 수다 모임</div><div class="meetup-meta">수다 · 송파구</div></div></div>
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#B5EAD7,#6BCBA0);">🌸</div><div><div class="meetup-name">잠실 나들이 클럽</div><div class="meetup-meta">나들이 · 송파구</div></div></div>
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#C7CEEA,#9FA8DA);">🍱</div><div><div class="meetup-name">강남 먹거리 모임</div><div class="meetup-meta">먹거리 · 강남구</div></div></div>
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#FFDAC1,#FF9A76);">🌻</div><div><div class="meetup-name">덕양 신생아 모임</div><div class="meetup-meta">수다 · 덕양구</div></div></div>
+              <div class="meetup-card"><div class="meetup-thumb" style="background:linear-gradient(135deg,#E2F0CB,#A8D8A8);">🏃</div><div><div class="meetup-name">화정 나들이</div><div class="meetup-meta">나들이 · 덕양구</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-003-C</span><span class="spec-title">최근 본 모임</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">최근에 조회한 모임을 최대 10개까지 확인한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">마이페이지 메인(MY-001) › 최근 본 숫자 탭</div></div>
+          <div class="spec-info-cell"><div class="sil">뒤로가기</div><div class="siv">마이페이지 메인(MY-001)으로 이동</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">화면 전환</div>
+          <div class="flow-wrap">
+            <div class="flow-row"><div class="flow-screen">마이페이지 메인 (MY-001)</div><div class="flow-arrow">→</div><div class="flow-screen curr">최근 본 모임 (현재)</div><div class="flow-trigger">최근 본 숫자 탭</div></div>
+            <div class="flow-row"><div class="flow-screen curr">최근 본 모임 (현재)</div><div class="flow-arrow">→</div><div class="flow-screen">모임 상세</div><div class="flow-trigger">모임 카드 탭</div></div>
+          </div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>최근 본 모임 목록</td><td>최근 조회한 모임을 최대 10개까지 노출한다. 조회 시각 기준 내림차순 정렬. 노출 항목: 모임명, 카테고리, 지역.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-nav">이동</span></td><td>모임 상세 진입</td><td>모임 카드 탭 시 해당 모임 상세로 이동한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">데이터 처리 기준</div>
+          <div class="exception-box">
+            · 모임 상세 진입 시 자동으로 최근 본 목록에 추가된다.<br>
+            · 동일 모임을 재방문하면 기존 항목을 제거하고 최상단으로 이동한다.<br>
+            · 최대 10개 초과 시 가장 오래된 항목을 자동 삭제한다.<br>
+            · 최근 본 모임이 없는 경우 → "아직 본 모임이 없어요." 문구 노출
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MY-006 설정 -->
+    <div id="page-setting" class="page">
+      <div class="phone-wrap">
+        <div class="phone-label">WIREFRAME</div>
+        <div class="phone">
+          <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+          <div class="phone-screen">
+            <div class="app-nav">
+              <div class="app-nav-back" onclick="gotoPage('main')">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> 마이페이지
+              </div>
+            </div>
+            <div style="padding:16px 16px 8px;font-size:18px;font-weight:700;">설정</div>
+            <div class="setting-section">
+              <div class="menu-section-label" style="padding:12px 20px 4px;">알림</div>
+              <div class="setting-item"><div class="setting-label">모임 알림</div><div class="toggle" onclick="this.classList.toggle('off')"><div class="toggle-knob"></div></div></div>
+              <div class="setting-item"><div class="setting-label">채팅 알림</div><div class="toggle" onclick="this.classList.toggle('off')"><div class="toggle-knob"></div></div></div>
+            </div>
+            <div class="setting-section">
+              <div class="menu-section-label" style="padding:12px 20px 4px;">마케팅</div>
+              <div class="setting-item"><div class="setting-label">마케팅 수신동의</div><div class="toggle off" onclick="this.classList.toggle('off')"><div class="toggle-knob"></div></div></div>
+            </div>
+            <div class="setting-section">
+              <div class="menu-section-label" style="padding:12px 20px 4px;">앱 정보</div>
+              <div class="setting-item"><div class="setting-label">버전 정보</div><div class="setting-value">1.0.0</div></div>
+            </div>
+            <div class="setting-section">
+              <div class="menu-section-label" style="padding:12px 20px 4px;">계정</div>
+              <div class="setting-item"><div class="setting-label">로그아웃</div></div>
+              <div class="setting-item"><div class="setting-label danger">회원 탈퇴</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spec-wrap">
+        <hr class="spec-divider">
+        <div class="spec-header"><span class="spec-badge">MY-006</span><span class="spec-title">설정</span></div>
+        <div class="spec-info-row">
+          <div class="spec-info-cell"><div class="sil">목적</div><div class="siv">알림, 로그아웃, 회원 탈퇴 등 계정 설정을 관리한다.</div></div>
+          <div class="spec-info-cell"><div class="sil">진입 경로</div><div class="siv">마이페이지 메인(MY-001) › 설정</div></div>
+          <div class="spec-info-cell"><div class="sil">뒤로가기</div><div class="siv">마이페이지 메인(MY-001)으로 이동</div></div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">기능 정의</div>
+          <table class="func-table">
+            <thead><tr><th style="width:36px">P</th><th style="width:62px">구분</th><th style="width:110px">기능명</th><th>상세 요구사항</th></tr></thead>
+            <tbody>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>모임 알림</td><td>토글로 모임 관련 푸시 알림을 온/오프한다. 기본값 ON.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>채팅 알림</td><td>토글로 채팅 푸시 알림을 온/오프한다. 기본값 ON.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>마케팅 수신동의</td><td>토글로 마케팅 푸시 알림 수신에 동의/거부한다. 기본값 OFF. 동의 시 변경 일시를 기록한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-display">노출</span></td><td>버전 정보</td><td>현재 앱 버전을 노출한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>로그아웃</td><td>탭 시 확인 다이얼로그 노출 후 처리. 완료 시 로그인 화면으로 이동한다.</td></tr>
+              <tr><td><span class="p0">P0</span></td><td><span class="tag tag-action">액션</span></td><td>회원 탈퇴</td><td>탭 시 탈퇴 안내 및 확인 단계를 거친다. 완료 시 계정·개인정보 삭제 처리 후 온보딩 화면으로 이동.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec-block">
+          <div class="spec-section-title">예외 케이스</div>
+          <div class="exception-box">· 모임장인 상태에서 회원 탈퇴 시도 시 → "모임장인 모임이 있어요. 모임장을 위임하거나 모임을 삭제한 후 탈퇴할 수 있어요." 안내 노출</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const PAGE_META = {
+  'main':          { title: '마이페이지',           path: '' },
+  'edit':          { title: '계정 정보 수정',        path: '마이페이지 › 계정 정보 수정' },
+  'meetup':        { title: '가입된 모임',           path: '마이페이지 › 가입된 모임' },
+  'bookmark':      { title: '관심 모임',             path: '마이페이지 › 관심 모임' },
+  'recent':        { title: '최근 본 모임',          path: '마이페이지 › 최근 본 모임' },
+  'cs':            { title: '고객센터',              path: '마이페이지 › 고객센터' },
+  'notice':        { title: '공지사항',              path: '마이페이지 › 공지사항' },
+  'notice-detail': { title: '공지사항 상세',         path: '마이페이지 › 공지사항 › 상세' },
+  'setting':       { title: '설정',                  path: '마이페이지 › 설정' },
+};
+
+function gotoPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-page="${id}"]`);
+  if (nav) nav.classList.add('active');
+  const meta = PAGE_META[id] || { title: '', path: '' };
+  document.getElementById('tb-title').textContent = meta.title;
+  document.getElementById('tb-path').textContent = meta.path;
+  document.querySelector('.content').scrollTop = 0;
+}
+
+function checkNick(input) {
+  const v = input.value, hint = document.getElementById('nick-hint'), btn = document.getElementById('save-btn');
+  const ok = /^[가-힣a-zA-Z0-9]*$/.test(v);
+  hint.className = 'field-hint';
+  if (!v.length) { hint.textContent = '2~10자, 한글/영문/숫자 사용 가능'; btn.className = 'save-btn disabled'; }
+  else if (!ok) { hint.textContent = '한글, 영문, 숫자만 사용할 수 있어요.'; hint.className = 'field-hint error'; btn.className = 'save-btn disabled'; }
+  else if (v.length < 2) { hint.textContent = '닉네임은 2자 이상 입력해 주세요.'; hint.className = 'field-hint error'; btn.className = 'save-btn disabled'; }
+  else { hint.textContent = '사용할 수 있는 닉네임이에요.'; hint.className = 'field-hint ok'; btn.className = 'save-btn'; }
+}
+
+function saveEdit() {
+  const v = document.getElementById('nick-input').value;
+  if (v.length < 2) return;
+  document.getElementById('display-nick').textContent = v;
+  gotoPage('main');
+}
+
+function openNotice(title, date, body) {
+  document.getElementById('notice-title').textContent = title;
+  document.getElementById('notice-date').textContent = date;
+  document.getElementById('notice-body').textContent = body;
+  gotoPage('notice-detail');
+}
+
+function toggleFaq(item) {
+  const answer = item.nextElementSibling;
+  const isOpen = answer.classList.contains('open');
+  document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+  if (!isOpen) answer.classList.add('open');
+}
+</script>
+</body>
+</html>
