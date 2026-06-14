@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>쏘바이 후원금 수령증</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap');
+
+:root{
+  --cream:#F6F1E6;
+  --paper:#FFFFFF;
+  --forest:#2C5A41;
+  --stamp:#C2554A;
+  --ink:#222222;
+  --ink-soft:#6E6A60;
+  --line:#D7D0C2;
+  --th-bg:#F7F4ED;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+  padding:40px 16px 60px;
+}
+
+.page{max-width:1080px;margin:0 auto;}
+
+.page-header{text-align:center;margin-bottom:32px;}
+.page-header h1{
+  font-family:'Noto Serif KR',serif;
+  font-weight:700;
+  font-size:26px;
+  color:var(--forest);
+  margin:0 0 8px;
+  letter-spacing:.5px;
+}
+.page-header p{
+  font-size:13px;
+  color:var(--ink-soft);
+  margin:0;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns: 340px 1fr;
+  gap:28px;
+  align-items:start;
+}
+@media (max-width:880px){
+  .layout{grid-template-columns:1fr;}
+}
+
+/* ---------- form panel ---------- */
+.form-panel{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:26px;
+}
+.form-section-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:14px;
+  font-weight:700;
+  color:var(--forest);
+  margin:0 0 14px;
+  padding-left:9px;
+  border-left:4px solid var(--forest);
+}
+.form-section + .form-section{margin-top:26px;}
+
+.field{margin-bottom:14px;}
+.field-label{
+  display:block;
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:6px;
+}
+.field-label .optional{
+  font-weight:400;
+  color:var(--ink-soft);
+  font-size:11px;
+}
+.field input[type="text"],
+.field input[type="date"]{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13.5px;
+  color:var(--ink);
+  background:#fff;
+  outline:none;
+  transition:border-color .15s;
+}
+.field input::placeholder{color:#C7BFAE;}
+.field input:focus{border-color:var(--forest);}
+
+.amount-field{
+  display:flex;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:0 12px;
+  transition:border-color .15s;
+}
+.amount-field span{
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:700;
+  color:var(--stamp);
+  margin-right:6px;
+  font-size:14px;
+}
+.amount-field input{
+  border:none;
+  outline:none;
+  flex:1;
+  padding:10px 0;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;
+  font-weight:600;
+  color:var(--ink);
+  background:transparent;
+  min-width:0;
+}
+.amount-field:focus-within{border-color:var(--forest);}
+
+.type-toggle{display:flex; gap:8px;}
+.type-toggle input{position:absolute; opacity:0; width:0; height:0;}
+.type-toggle label{position:relative; flex:1; margin:0;}
+.type-toggle label span{
+  display:block;
+  text-align:center;
+  padding:9px 0;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:.15s;
+}
+.type-toggle label:has(input:checked) span{
+  border-color:var(--forest);
+  background:var(--forest);
+  color:#fff;
+}
+
+.hidden{display:none !important;}
+
+.download-btn{
+  width:100%;
+  margin-top:8px;
+  padding:14px;
+  border:none;
+  border-radius:8px;
+  background:var(--forest);
+  color:#fff;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background .15s;
+}
+.download-btn:hover{background:#234a35;}
+.download-hint{
+  font-size:11.5px;
+  color:var(--ink-soft);
+  text-align:center;
+  margin:10px 0 0;
+  line-height:1.6;
+}
+
+/* ---------- preview panel ---------- */
+.preview-panel{
+  display:flex;
+  justify-content:center;
+  padding-top:4px;
+}
+
+.document{
+  position:relative;
+  width:100%;
+  max-width:580px;
+  background:var(--paper);
+  padding:46px 48px 50px;
+  box-shadow:0 18px 50px -22px rgba(44,90,65,.3);
+  overflow:hidden;
+}
+.document::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:5px;
+  background:var(--forest);
+}
+
+.doc-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:26px;
+}
+.doc-org-name{font-family:'Noto Serif KR',serif; font-weight:700; font-size:16px; color:var(--forest); margin:0;}
+.doc-meta{text-align:right; font-size:11.5px; color:var(--ink-soft); line-height:1.7;}
+.doc-meta b{color:var(--ink); font-weight:600;}
+
+.doc-title-wrap{text-align:center; padding-bottom:14px; margin-bottom:26px; border-bottom:3px double var(--ink);}
+.doc-title{font-family:'Noto Serif KR',serif; font-size:24px; font-weight:700; letter-spacing:8px; margin:0; color:var(--ink);}
+
+.doc-to{font-size:14.5px; font-weight:700; margin:0 0 6px;}
+.doc-lead{font-size:13px; color:var(--ink-soft); margin:0 0 18px;}
+
+.doc-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:0 0 22px;
+  font-size:13px;
+}
+.doc-table th, .doc-table td{
+  border:1px solid var(--line);
+  padding:9px 13px;
+  text-align:left;
+  vertical-align:middle;
+}
+.doc-table th{
+  width:128px;
+  background:var(--th-bg);
+  font-weight:700;
+  color:var(--ink);
+  white-space:nowrap;
+}
+.doc-table td{color:var(--ink);}
+.doc-table .amount-cell{
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:700;
+  font-size:15.5px;
+  color:var(--ink);
+}
+.doc-table tr.hidden{display:none;}
+
+.doc-section-title{
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--forest);
+  margin:0 0 10px;
+  padding-left:8px;
+  border-left:4px solid var(--forest);
+}
+
+.doc-footer{
+  margin-top:32px;
+  text-align:right;
+}
+.doc-date{
+  font-size:13px;
+  margin:0 0 18px;
+  letter-spacing:1px;
+}
+.doc-signer{
+  font-family:'Noto Serif KR',serif;
+  font-weight:700;
+  font-size:14.5px;
+  margin:0 0 6px;
+  color:var(--ink);
+}
+.doc-signer-sub{
+  font-size:13px;
+  margin:0;
+  color:var(--ink);
+}
+.doc-signer-sub .sig-line{
+  display:inline-block;
+  min-width:78px;
+  border-bottom:1px solid var(--ink);
+  margin-left:4px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <h1>쏘바이 후원금 수령증 발급기</h1>
+    <p>정보를 입력하면 미리보기가 바로 바뀝니다. 작성 후 워드 파일로 다운로드하세요.</p>
+  </header>
+
+  <div class="layout">
+
+    <section class="form-panel">
+
+      <div class="form-section">
+        <h2 class="form-section-title">1. 후원 내용</h2>
+
+        <div class="field">
+          <label class="field-label" for="sponsor">후원사명</label>
+          <input type="text" id="sponsor" placeholder="예: 네츄럴코어" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <span class="field-label">후원 형태</span>
+          <div class="type-toggle">
+            <label>
+              <input type="radio" name="donationType" value="cash" checked>
+              <span>현금</span>
+            </label>
+            <label>
+              <input type="radio" name="donationType" value="goods">
+              <span>물품</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" id="amountLabel" for="amount">후원금액</label>
+          <div class="amount-field">
+            <span>₩</span>
+            <input type="text" id="amount" inputmode="numeric" placeholder="0" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="field hidden" id="itemField">
+          <label class="field-label" for="item">물품 내역 <span class="optional">(선택)</span></label>
+          <input type="text" id="item" placeholder="예: 강아지 사료 20kg" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="receivedDate">수령일</label>
+          <input type="date" id="receivedDate">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="form-section-title">2. 문서 정보</h2>
+
+        <div class="field">
+          <label class="field-label" for="issueDate">발급일자</label>
+          <input type="date" id="issueDate">
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="docNum">문서번호 <span class="optional">(선택)</span></label>
+          <input type="text" id="docNum" placeholder="예: SOBY-2026-001" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="form-section-title">3. 발급 단체 정보</h2>
+
+        <div class="field">
+          <label class="field-label" for="rep">대표자명</label>
+          <input type="text" id="rep" placeholder="대표자 이름" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="regNum">고유번호 / 사업자등록번호 <span class="optional">(해당 시)</span></label>
+          <input type="text" id="regNum" placeholder="예: 000-00-00000" autocomplete="off">
+        </div>
+      </div>
+
+      <button class="download-btn" id="downloadBtn">워드 파일로 다운로드</button>
+      <p class="download-hint">파일명은 "쏘바이 후원금 수령증_후원사명.doc"으로 저장됩니다. Word(또는 한글)에서 열어 로고 삽입 등 편집할 수 있습니다.<br>※ Word에서 열 때 형식 확인 메시지가 나오면 "예/계속"을 누르면 정상적으로 열립니다.</p>
+    </section>
+
+    <section class="preview-panel">
+      <div class="document" id="document">
+
+        <div class="doc-header">
+          <p class="doc-org-name">비영리단체 쏘바이</p>
+          <div class="doc-meta">
+            <p id="meta-docnum" class="hidden">문서번호 : <b id="out-docnum">-</b></p>
+            <p>발급일자 : <b id="out-issueDate">-</b></p>
+          </div>
+        </div>
+
+        <div class="doc-title-wrap">
+          <h1 class="doc-title">후원금(물품) 수령증</h1>
+        </div>
+
+        <p class="doc-to">수신 : <span id="out-sponsor1">후원사명</span> 귀중</p>
+        <p class="doc-lead">아래와 같이 후원금(물품)을 수령하였음을 확인합니다.</p>
+
+        <table class="doc-table">
+          <tr>
+            <th>후원사</th>
+            <td id="out-sponsor2">-</td>
+          </tr>
+          <tr>
+            <th>후원 형태</th>
+            <td id="out-type">현금</td>
+          </tr>
+          <tr>
+            <th id="out-amount-label">후원금액</th>
+            <td id="out-amount" class="amount-cell">₩0</td>
+          </tr>
+          <tr id="out-item-row" class="hidden">
+            <th>물품 내역</th>
+            <td id="out-item">-</td>
+          </tr>
+          <tr>
+            <th>수령일</th>
+            <td id="out-date">-</td>
+          </tr>
+        </table>
+
+        <p class="doc-section-title">발급 단체 정보</p>
+        <table class="doc-table">
+          <tr>
+            <th>단체명</th>
+            <td>비영리단체 쏘바이</td>
+          </tr>
+          <tr>
+            <th>대표자</th>
+            <td id="out-rep">-</td>
+          </tr>
+          <tr id="out-reg-row" class="hidden">
+            <th>고유번호</th>
+            <td id="out-reg">-</td>
+          </tr>
+        </table>
+
+        <div class="doc-footer">
+          <p class="doc-date" id="out-footerDate">-</p>
+          <p class="doc-signer">비영리단체 쏘바이</p>
+          <p class="doc-signer-sub" id="out-signerLine">대표 <span class="sig-line"></span></p>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+const sponsorInput = document.getElementById('sponsor');
+const amountInput = document.getElementById('amount');
+const itemField = document.getElementById('itemField');
+const itemInput = document.getElementById('item');
+const dateInput = document.getElementById('receivedDate');
+const issueDateInput = document.getElementById('issueDate');
+const docNumInput = document.getElementById('docNum');
+const repInput = document.getElementById('rep');
+const regNumInput = document.getElementById('regNum');
+const amountLabel = document.getElementById('amountLabel');
+
+const outSponsor1 = document.getElementById('out-sponsor1');
+const outSponsor2 = document.getElementById('out-sponsor2');
+const outType = document.getElementById('out-type');
+const outAmountLabel = document.getElementById('out-amount-label');
+const outAmount = document.getElementById('out-amount');
+const outItemRow = document.getElementById('out-item-row');
+const outItem = document.getElementById('out-item');
+const outDate = document.getElementById('out-date');
+const outIssueDate = document.getElementById('out-issueDate');
+const outFooterDate = document.getElementById('out-footerDate');
+const metaDocnum = document.getElementById('meta-docnum');
+const outDocnum = document.getElementById('out-docnum');
+const outRep = document.getElementById('out-rep');
+const outRegRow = document.getElementById('out-reg-row');
+const outReg = document.getElementById('out-reg');
+const outSignerLine = document.getElementById('out-signerLine');
+
+function formatDateKR(value){
+  if(!value) return '-';
+  const [y,m,d] = value.split('-');
+  return `${y}년 ${parseInt(m,10)}월 ${parseInt(d,10)}일`;
+}
+
+function digitsOnly(value){
+  return value.replace(/[^0-9]/g,'');
+}
+
+function getType(){
+  return document.querySelector('input[name="donationType"]:checked').value;
+}
+
+function update(){
+  const sponsor = sponsorInput.value.trim() || '-';
+  outSponsor1.textContent = sponsor;
+  outSponsor2.textContent = sponsor;
+
+  const type = getType();
+  if(type === 'cash'){
+    outType.textContent = '현금';
+    amountLabel.textContent = '후원금액';
+    outAmountLabel.textContent = '후원금액';
+    itemField.classList.add('hidden');
+    outItemRow.classList.add('hidden');
+  } else {
+    outType.textContent = '물품';
+    amountLabel.textContent = '물품가액';
+    outAmountLabel.textContent = '물품가액';
+    itemField.classList.remove('hidden');
+    outItemRow.classList.remove('hidden');
+    outItem.textContent = itemInput.value.trim() || '-';
+  }
+
+  const digits = digitsOnly(amountInput.value);
+  outAmount.textContent = `₩${digits ? Number(digits).toLocaleString('ko-KR') : '0'}`;
+  outDate.textContent = formatDateKR(dateInput.value);
+  outIssueDate.textContent = formatDateKR(issueDateInput.value);
+  outFooterDate.textContent = formatDateKR(issueDateInput.value);
+
+  const docNum = docNumInput.value.trim();
+  if(docNum){
+    metaDocnum.classList.remove('hidden');
+    outDocnum.textContent = docNum;
+  } else {
+    metaDocnum.classList.add('hidden');
+  }
+
+  outRep.textContent = repInput.value.trim() || '-';
+
+  const reg = regNumInput.value.trim();
+  if(reg){
+    outRegRow.classList.remove('hidden');
+    outReg.textContent = reg;
+  } else {
+    outRegRow.classList.add('hidden');
+  }
+
+  const repName = repInput.value.trim();
+  if(repName){
+    outSignerLine.innerHTML = `대표 ${repName} (인)`;
+  } else {
+    outSignerLine.innerHTML = '대표 <span class="sig-line"></span>';
+  }
+}
+
+amountInput.addEventListener('input', (e)=>{
+  const digits = digitsOnly(e.target.value);
+  e.target.value = digits ? Number(digits).toLocaleString('ko-KR') : '';
+  update();
+});
+
+[sponsorInput, itemInput, dateInput, issueDateInput, docNumInput, repInput, regNumInput]
+  .forEach(el => el.addEventListener('input', update));
+document.querySelectorAll('input[name="donationType"]').forEach(r => r.addEventListener('change', update));
+
+// 초기값: 수령일/발급일자 = 오늘, 대표자 = 안소희
+const today = new Date();
+const iso = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+dateInput.value = iso;
+issueDateInput.value = iso;
+repInput.value = '안소희';
+regNumInput.value = '255-80-02968';
+
+update();
+
+// 워드 파일 생성
+function buildWordHtml(){
+  const sponsor = sponsorInput.value.trim() || '-';
+  const type = getType();
+  const typeLabel = type === 'cash' ? '현금' : '물품';
+  const amountLabelText = type === 'cash' ? '후원금액' : '물품가액';
+  const digits = digitsOnly(amountInput.value);
+  const amountText = `\u20a9${digits ? Number(digits).toLocaleString('ko-KR') : '0'}`;
+  const dateText = formatDateKR(dateInput.value);
+  const issueDateText = formatDateKR(issueDateInput.value);
+  const docNum = docNumInput.value.trim();
+  const rep = repInput.value.trim() || '-';
+  const reg = regNumInput.value.trim();
+  const item = itemInput.value.trim();
+
+  let itemRow = '';
+  if(type === 'goods'){
+    itemRow = `<tr><th>물품 내역</th><td>${item || '-'}</td></tr>`;
+  }
+  let regRow = '';
+  if(reg){
+    regRow = `<tr><th>고유번호</th><td>${reg}</td></tr>`;
+  }
+  let docNumLine = '';
+  if(docNum){
+    docNumLine = `<p style="margin:0;">문서번호 : ${docNum}</p>`;
+  }
+
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<style>
+  body{ font-family:'맑은 고딕','Malgun Gothic',sans-serif; font-size:11pt; color:#222222; }
+  table{ border-collapse:collapse; width:100%; margin:0 0 16pt; }
+  table.layout{ border:none; margin:0 0 14pt; }
+  table.layout td{ border:none; padding:0; vertical-align:top; }
+  th, td{ border:1px solid #333333; padding:7pt 10pt; text-align:left; font-size:10.5pt; }
+  th{ background-color:#F7F4ED; width:130pt; font-weight:bold; }
+  .title{ text-align:center; font-size:20pt; font-weight:bold; letter-spacing:6pt; border-bottom:2px solid #222222; padding-bottom:10pt; margin-bottom:20pt; }
+  .org-name{ font-size:13pt; font-weight:bold; color:#2C5A41; }
+  .meta{ text-align:right; font-size:9.5pt; color:#555555; }
+  .to-line{ font-size:12pt; font-weight:bold; margin:0 0 6pt; }
+  .lead{ font-size:10.5pt; color:#555555; margin:0 0 14pt; }
+  .section-title{ font-size:10.5pt; font-weight:bold; color:#2C5A41; margin:18pt 0 8pt; border-left:4px solid #2C5A41; padding-left:6pt; }
+  .footer{ text-align:right; margin-top:30pt; font-size:10.5pt; }
+  .footer .org{ font-weight:bold; font-size:11pt; }
+</style>
+</head>
+<body>
+  <table class="layout">
+    <tr>
+      <td class="org-name">비영리단체 쏘바이</td>
+      <td class="meta">
+        ${docNumLine}
+        <p style="margin:0;">발급일자 : ${issueDateText}</p>
+      </td>
+    </tr>
+  </table>
+
+  <div class="title">후원금(물품) 수령증</div>
+
+  <p class="to-line">수신 : ${sponsor} 귀중</p>
+  <p class="lead">아래와 같이 후원금(물품)을 수령하였음을 확인합니다.</p>
+
+  <table>
+    <tr><th>후원사</th><td>${sponsor}</td></tr>
+    <tr><th>후원 형태</th><td>${typeLabel}</td></tr>
+    <tr><th>${amountLabelText}</th><td>${amountText}</td></tr>
+    ${itemRow}
+    <tr><th>수령일</th><td>${dateText}</td></tr>
+  </table>
+
+  <div class="section-title">발급 단체 정보</div>
+  <table>
+    <tr><th>단체명</th><td>비영리단체 쏘바이</td></tr>
+    <tr><th>대표자</th><td>${rep}</td></tr>
+    ${regRow}
+  </table>
+
+  <div class="footer">
+    <p>${issueDateText}</p>
+    <p class="org">비영리단체 쏘바이</p>
+    <p>대표 ${rep} (인)</p>
+  </div>
+</body>
+</html>`;
+}
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const html = buildWordHtml();
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const sponsorName = (sponsorInput.value.trim() || '후원사').replace(/[\\/:*?"<>|]/g, '');
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `쏘바이 후원금 수령증_${sponsorName}.doc`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
